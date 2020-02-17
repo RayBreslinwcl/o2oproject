@@ -29,14 +29,16 @@ public class ImageUtil {
 	 * @param targetAddr
 	 * @return
 	 */
-	public static String generateThumbnail(CommonsMultipartFile thumbnail, String targetAddr) {
+//	public static String generateThumbnail(CommonsMultipartFile thumbnail, String targetAddr) {
+	public static String generateThumbnail(File thumbnail, String targetAddr) {
 		String realFileName = PathUtil.getRandomFileName();
 		String extension = getFileExtension(thumbnail); //获取文件扩展名称
 		makeDirPath(targetAddr);
 		String relativeAddr = targetAddr + realFileName + extension;
 		File dest = new File(PathUtil.getImgBasePath() + relativeAddr);
 		try {
-			Thumbnails.of(thumbnail.getInputStream()).size(200, 200).outputQuality(0.25f).toFile(dest);
+//			Thumbnails.of(thumbnail.getInputStream()).size(200, 200).outputQuality(0.25f).toFile(dest);
+			Thumbnails.of(thumbnail).size(200, 200).outputQuality(0.25f).toFile(dest);
 		} catch (IOException e) {
 			throw new RuntimeException("创建缩略图失败：" + e.toString());
 		}
@@ -63,8 +65,8 @@ public class ImageUtil {
 	 * @param cFile
 	 * @return
 	 */
-	private static String getFileExtension(CommonsMultipartFile cFile) {
-		String originalFileName = cFile.getOriginalFilename();
+	private static String getFileExtension(File cFile) {
+		String originalFileName = cFile.getName();// .getOriginalFilename();
 		return originalFileName.substring(originalFileName.lastIndexOf("."));
 	}
 }
