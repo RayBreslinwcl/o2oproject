@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Date;
 
 /**
@@ -23,7 +26,7 @@ public class ShopServiceTest extends BaseTest {
     private ShopService shopService;
 
     @Test
-    public void testAddShop() {
+    public void testAddShop() throws FileNotFoundException {
         Shop shop = new Shop();
         PersonInfo owner = new PersonInfo();
         Area area = new Area();
@@ -35,12 +38,12 @@ public class ShopServiceTest extends BaseTest {
         shop.setOwner(owner);
         shop.setArea(area);
         shop.setShopCategory(shopCategory);
-        shop.setShopName("测试的店铺2");
-        shop.setShopDesc("test2");
-        shop.setShopAddr("testaddr2");
+        shop.setShopName("测试的店铺3");
+        shop.setShopDesc("test3");
+        shop.setShopAddr("testaddr4");
 
         shop.setPhone("1388888888");
-        shop.setShopImg("test1");
+        shop.setShopImg("test4");
         shop.setCreateTime(new Date());
         shop.setLastEditTime(new Date());
         shop.setEnableStatus(ShopStateEnum.Check.getState());
@@ -48,7 +51,8 @@ public class ShopServiceTest extends BaseTest {
 
         File shopImg=new File("E:/Tools/picture/测试图片1.png");
 //        CommonsMultipartFile cmf=new CommonsMultipartFile();
-        ShopExecution se = shopService.addShop(shop,shopImg);
+        InputStream is=new FileInputStream(shopImg);
+        ShopExecution se = shopService.addShop(shop,is,shopImg.getName());
         Assert.assertEquals(ShopStateEnum.Check.getState(),se.getState());
 
         /**

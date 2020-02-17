@@ -14,6 +14,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Date;
 
 /**
@@ -26,8 +27,8 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional //添加事务
-    public ShopExecution addShop(Shop shop, File shopImg) {
-//        return null;
+//    public ShopExecution addShop(Shop shop, File shopImg) {
+    public ShopExecution addShop(Shop shop, InputStream shopImgInputStream, String fileName) {
         if(shop==null){
             return new ShopExecution(ShopStateEnum.NULL_SHOP);//没有商铺信息
         }
@@ -40,9 +41,9 @@ public class ShopServiceImpl implements ShopService {
                 throw new RuntimeException("店铺创建失败！"); //RuntimeException会使事务回滚，shopDao.insertShop失效
             }else {
                 //存储图片
-                if(shopImg!=null){
+                if(shopImgInputStream!=null){
                     try {
-                        addShopImg(shop,shopImg);
+                        addShopImg(shop,shopImgInputStream,fileName);
                     }catch (Exception e){
                         throw new RuntimeException("addShopImg error:"+e.getMessage());
                     }
@@ -61,10 +62,10 @@ public class ShopServiceImpl implements ShopService {
 
     }
 
-    private void addShopImg(Shop shop, File shopImg){
+    private void addShopImg(Shop shop, InputStream shopImgInputStream,String fileName){
         //获取shop图片目录的相对值路径
         String dest= PathUtil.getShopImagePath(shop.getShopId());
-        String shopImgAddr= ImageUtil.generateThumbnail(shopImg,dest);
+        String shopImgAddr= ImageUtil.generateThumbnail(shopImgInputStream,fileName,dest);
         shop.setShopImg(shopImgAddr);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,20 +26,19 @@ public class ImageUtil {
 
 	/**
 	 * 创建缩略图片文件
-	 * @param thumbnail
 	 * @param targetAddr
 	 * @return
 	 */
 //	public static String generateThumbnail(CommonsMultipartFile thumbnail, String targetAddr) {
-	public static String generateThumbnail(File thumbnail, String targetAddr) {
+	public static String generateThumbnail(InputStream thumbnailInputStream,String fileName, String targetAddr) {
 		String realFileName = PathUtil.getRandomFileName();
-		String extension = getFileExtension(thumbnail); //获取文件扩展名称
+		String extension = getFileExtension(fileName); //获取文件扩展名称
 		makeDirPath(targetAddr);
 		String relativeAddr = targetAddr + realFileName + extension;
 		File dest = new File(PathUtil.getImgBasePath() + relativeAddr);
 		try {
 //			Thumbnails.of(thumbnail.getInputStream()).size(200, 200).outputQuality(0.25f).toFile(dest);
-			Thumbnails.of(thumbnail).size(200, 200).outputQuality(0.25f).toFile(dest);
+			Thumbnails.of(thumbnailInputStream).size(200, 200).outputQuality(0.25f).toFile(dest);
 		} catch (IOException e) {
 			throw new RuntimeException("创建缩略图失败：" + e.toString());
 		}
@@ -62,11 +62,10 @@ public class ImageUtil {
 
 	/**
 	 * 扩展名
-	 * @param cFile
 	 * @return
 	 */
-	private static String getFileExtension(File cFile) {
-		String originalFileName = cFile.getName();// .getOriginalFilename();
-		return originalFileName.substring(originalFileName.lastIndexOf("."));
+	private static String getFileExtension(String fileName) {
+//		String originalFileName = cFile.getName();// .getOriginalFilename();
+		return fileName.substring(fileName.lastIndexOf("."));
 	}
 }

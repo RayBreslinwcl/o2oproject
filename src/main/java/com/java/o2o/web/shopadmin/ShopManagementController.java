@@ -71,37 +71,49 @@ public class ShopManagementController {
         //2.注册店铺
         if(shop!=null&&shopImg!=null){
             PersonInfo owner=new PersonInfo();
+            //Session TODO:后续Id在Session获得
             owner.setUserId(1L);
             shop.setOwner(owner);
 
+            //=================取消=============================
             //shopImg直接转换为File
-            File shopImgFile=new File(PathUtil.getImgBasePath()+ PathUtil.getRandomFileName());
+//            File shopImgFile=new File(PathUtil.getImgBasePath()+ PathUtil.getRandomFileName());
+//            try {
+//                shopImgFile.createNewFile();
+//            }catch (IOException e){
+//                modelMap.put("success",false);
+//                modelMap.put("errMsg",e.getMessage());
+//                return modelMap;
+//            }
+
+//            try {
+//                inputStreamToFile(shopImg.getInputStream(),shopImgFile);
+//            } catch (IOException e) {
+//                modelMap.put("success",false);
+//                modelMap.put("errMsg",e.getMessage());
+//                return modelMap;
+//            }
+            //=================取消=============================
+
+            //addShop参数变为File，是因为方便在service层直接测试
+//            ShopExecution se=shopService.addShop(shop,shopImg);
+//            ShopExecution se=shopService.addShop(shop,shopImgFile);
+            ShopExecution se= null;
             try {
-                shopImgFile.createNewFile();
-            }catch (IOException e){
-                modelMap.put("success",false);
-                modelMap.put("errMsg",e.getMessage());
-                return modelMap;
-            }
-            try {
-                inputStreamToFile(shopImg.getInputStream(),shopImgFile);
+                se = shopService.addShop(shop,shopImg.getInputStream(),shopImg.getOriginalFilename());
+                //判断最终状态
+                if(se.getState()== ShopStateEnum.Check.getState()){
+                    modelMap.put("success",true);
+                }else {
+                    modelMap.put("success",false);
+                    modelMap.put("errMsg",se.getStateInfo());
+                }
             } catch (IOException e) {
                 modelMap.put("success",false);
                 modelMap.put("errMsg",e.getMessage());
                 return modelMap;
             }
 
-            //addShop参数变为File，是因为方便在service层直接测试
-//            ShopExecution se=shopService.addShop(shop,shopImg);
-            ShopExecution se=shopService.addShop(shop,shopImgFile);
-
-            //判断最终状态
-            if(se.getState()== ShopStateEnum.Check.getState()){
-                modelMap.put("success",true);
-            }else {
-                modelMap.put("success",false);
-                modelMap.put("errMsg",se.getStateInfo());
-            }
             return modelMap;
         }else {
             modelMap.put("success",false);
@@ -114,30 +126,31 @@ public class ShopManagementController {
 //        return null;
     }
 
-    private static void inputStreamToFile(InputStream ins,File file){
-        OutputStream os=null;
-
-        try {
-            os=new FileOutputStream(file);
-            int bytesRead=0;
-            byte[] buffer=new byte[1024];
-            while ((bytesRead=ins.read(buffer))!=-1){
-                os.write(buffer,0,bytesRead);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("调用inputStreamToFile产生异常："+e.getMessage());
-//            e.printStackTrace();
-        }finally {
-            try {
-                if(os!=null){
-                    os.close();
-                }
-                if(ins!=null){
-                    ins.close();;
-                }
-            }catch (IOException e){
-                throw new RuntimeException("inputStreamToFile关闭io产生异常："+e.getMessage());
-            }
-        }
-    }
+    //取消了这个方法，用另外方法inputstream替代
+//    private static void inputStreamToFile(InputStream ins,File file){
+//        OutputStream os=null;
+//
+//        try {
+//            os=new FileOutputStream(file);
+//            int bytesRead=0;
+//            byte[] buffer=new byte[1024];
+//            while ((bytesRead=ins.read(buffer))!=-1){
+//                os.write(buffer,0,bytesRead);
+//            }
+//        } catch (Exception e) {
+//            throw new RuntimeException("调用inputStreamToFile产生异常："+e.getMessage());
+////            e.printStackTrace();
+//        }finally {
+//            try {
+//                if(os!=null){
+//                    os.close();
+//                }
+//                if(ins!=null){
+//                    ins.close();;
+//                }
+//            }catch (IOException e){
+//                throw new RuntimeException("inputStreamToFile关闭io产生异常："+e.getMessage());
+//            }
+//        }
+//    }
 }
